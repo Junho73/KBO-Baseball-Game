@@ -142,7 +142,7 @@ void DrawPlayerModel(int height, int weight, int x, int y) {
 }
 
 Player CreatePlayer() {
-    Player p = { "유망주", 175, 75, 0, 0, 0 };
+    Player p = { "유망주", 175, 75, 0, 0, 0, 0, 0 };
     int cursor = 0;
     int key;
     bool isStatRolled = false;
@@ -245,4 +245,45 @@ int MainLobby(Player* p, const char* teamName) {
             return cursor;
         }
     }
+}
+
+void ShowSchedule(Player* p, const char* teamName) {
+    int i;
+    const char* dates[10] = {
+        "03/28 (토) - [개막전] 새로운 시작",
+        "04/11 (토) - [원정] 봄날의 연전",
+        "05/05 (화) - [홈] 라이벌 매치",
+        "06/06 (토) - [원정] 현충일 매치",
+        "07/18 (토) - [이벤트] 라이벌 매치",
+        "08/15 (토) - [홈] 광복절 매치",
+        "09/12 (토) - [원정] 가을야구 쟁탈전",
+        "10/03 (토) - [홈] 정규시즌 최종전",
+        "10/17 (토) - [포스트시즌] 플레이오프",
+        "10/24 (토) - [한국시리즈] 우승을 향해"
+    };
+
+    system("cls");
+    HideCursor();
+
+    GotoXY(4, 2);  printf("======================================================");
+    GotoXY(4, 3);  printf("            [%s] 2026 시즌 핵심 경기 일정             ", teamName);
+    GotoXY(4, 4);  printf("======================================================");
+
+    for (i = 0; i < 10; i++) {
+        GotoXY(6, 6 + i);
+        if (i < p->currentMatchIndex) {
+            printf(" [완료] %s", dates[i]);
+        }
+        else if (i == p->currentMatchIndex) {
+            printf(" ▶▶▶ %s (NEXT GAME)", dates[i]);
+        }
+        else {
+            printf(" [대기] %s", dates[i]);
+        }
+    }
+
+    GotoXY(4, 18); printf("======================================================");
+    GotoXY(4, 20); printf("아무 키나 누르면 클럽 하우스로 돌아갑니다...");
+
+    _getch();
 }
