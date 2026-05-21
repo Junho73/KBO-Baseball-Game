@@ -296,7 +296,6 @@ void ShowStatus(Player* p, const char* teamName) {
     GotoXY(2, 3);  printf("           [%s] 소속 선수 스테이터스          ", teamName);
     GotoXY(2, 4);  printf("==================================================");
 
-    // 1. 좌측 텍스트 정보 출력
     GotoXY(4, 6);  printf("■ 이름 : %s", p->name);
     GotoXY(4, 8);  printf("■ 신체 : %d cm / %d kg", p->height, p->weight);
 
@@ -308,11 +307,98 @@ void ShowStatus(Player* p, const char* teamName) {
     GotoXY(4, 17); printf("[ 보유 자산 ]");
     GotoXY(4, 18); printf(" - 훈련 포인트      : %d P", p->points);
 
-    // 2. 우측 캐릭터 모델링 렌더링 (X좌표 32, Y좌표 6)
     DrawPlayerModel(p->height, p->weight, 32, 6);
 
     GotoXY(2, 24); printf("==================================================");
     GotoXY(2, 25); printf("아무 키나 누르면 클럽 하우스로 돌아갑니다...");
 
-    _getch(); // 키 입력 대기
+    _getch();
+}
+
+void PointShop(Player* p) {
+    int cursor = 0;
+    int key;
+    bool messageTrigger = false;
+    char message[50] = "";
+
+    while (true) {
+        system("cls");
+        HideCursor();
+
+        GotoXY(2, 2);  printf("======================================================");
+        GotoXY(2, 3);  printf("            [ 훈련 센터 & 포인트 상점 ]               ");
+        GotoXY(2, 4);  printf("======================================================");
+
+        GotoXY(4, 6);  printf("?? 보유 포인트 : %d P", p->points);
+        GotoXY(4, 7);  printf("------------------------------------------------------");
+
+        GotoXY(4, 9);  printf("[ 현재 능력치 및 게임 적용 보너스 ]");
+        GotoXY(4, 10); printf(" 파워   : %3d (장타 보너스 Lv.%d)", p->power, p->power / 10);
+        GotoXY(4, 11); printf(" 민첩   : %3d (타이밍 보너스 Lv.%d)", p->agility, p->agility / 10);
+        GotoXY(4, 12); printf(" 지구력 : %3d (체력 감소 방어 Lv.%d)", p->stamina, p->stamina / 10);
+        GotoXY(4, 13); printf(" * 팁: 스탯 10마다 인게임 확률이 비약적으로 상승합니다!");
+
+        GotoXY(4, 15); printf("------------------------------------------------------");
+
+        GotoXY(6, 17); printf("%s 1. 파워 향상 특훈   (+1 파워)   [ 10 P ]", (cursor == 0) ? "▶" : "  ");
+        GotoXY(6, 18); printf("%s 2. 민첩 향상 특훈   (+1 민첩)   [ 10 P ]", (cursor == 1) ? "▶" : "  ");
+        GotoXY(6, 19); printf("%s 3. 지구력 향상 특훈 (+1 지구력) [ 10 P ]", (cursor == 2) ? "▶" : "  ");
+        GotoXY(6, 20); printf("%s 4. [도박] 랜덤 비약 (+3 랜덤)   [ 10 P ]", (cursor == 3) ? "▶" : "  ");
+        GotoXY(6, 21); printf("%s 5. 클럽 하우스로 돌아가기", (cursor == 4) ? "▶" : "  ");
+
+        if (messageTrigger) {
+            GotoXY(4, 23); printf(">> %s", message);
+            messageTrigger = false;
+        }
+
+        GotoXY(2, 25); printf("======================================================");
+
+        key = _getch();
+        if (key == 224) {
+            key = _getch();
+            if (key == 72) { cursor--; if (cursor < 0) cursor = 4; }
+            else if (key == 80) { cursor++; if (cursor > 4) cursor = 0; }
+        }
+        else if (key == 32 || key == 13) {
+            if (cursor == 4) return;
+
+            if (p->points < 10) {
+                sprintf(message, "포인트가 부족합니다! (현재 %d P)", p->points);
+                messageTrigger = true;
+                continue;
+            }
+
+            if (cursor == 0) {
+                if (p->power >= 100) { sprintf(message, "파워가 이미 최대치(100)입니다!"); messageTrigger = true; }
+                else { p->points -= 10; p->power++; sprintf(message, "파워가 1 상승했습니다!"); messageTrigger = true; }
+            }
+            else if (cursor == 1) {
+                if (p->agility >= 100) { sprintf(message, "민첩이 이미 최대치(100)입니다!"); messageTrigger = true; }
+                else { p->points -= 10; p->agility++; sprintf(message, "민첩이 1 상승했습니다!"); messageTrigger = true; }
+            }
+            else if (cursor == 2) {
+                if (p->stamina >= 100) { sprintf(message, "지구력이 이미 최대치(100)입니다!"); messageTrigger = true; }
+                else { p->points -= 10; p->stamina++; sprintf(message, "지구력이 1 상승했습니다!"); messageTrigger = true; }
+            }
+            else if (cursor == 3) {
+                if (p->power == 100 && p->agility == 100 && p->stamina == 100) {
+                    sprintf(message, "모든 스탯이 최대치입니다!"); messageTrigger = true;
+                }
+                else {
+                    p->points -= 10;
+                    int added = 0;
+                    while (added < 3) {
+                        int r = rand() % 3;
+                        if (r == 0 && p->power < 100) { p->power++; added++; }
+                        else if (r == 1 && p->agility < 100) { p->agility++; added++; }
+                        else if (r == 2 && p->stamina < 100) { p->stamina++; added++; }
+
+                        if (p->power == 100 && p->agility == 100 && p->stamina == 100) break;
+                    }
+                    sprintf(message, "신비한 비약을 마시고 총 %d 스탯이 올랐습니다!", added);
+                    messageTrigger = true;
+                }
+            }
+        }
+    }
 }
