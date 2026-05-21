@@ -33,6 +33,11 @@ int main() {
             PointShop(&myPlayer);
             break;
         case 3:
+            ShowPreGameStory(&myPlayer, selectedTeamIndex);
+            system("cls");
+            GotoXY(5, 5); printf(">> 플레이볼! 삐아아악!!! (인게임 구현 대기 중) <<");
+            break;
+        case 4:
             GotoXY(5, 5); printf(">> 대망의 [다음 경기 시작] 로직으로 진입합니다! <<");
             break;
         }
