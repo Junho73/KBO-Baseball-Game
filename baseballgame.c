@@ -287,3 +287,32 @@ void ShowSchedule(Player* p, const char* teamName) {
 
     _getch();
 }
+
+void ShowStatus(Player* p, const char* teamName) {
+    system("cls");
+    HideCursor();
+
+    GotoXY(2, 2);  printf("==================================================");
+    GotoXY(2, 3);  printf("           [%s] 소속 선수 스테이터스          ", teamName);
+    GotoXY(2, 4);  printf("==================================================");
+
+    // 1. 좌측 텍스트 정보 출력
+    GotoXY(4, 6);  printf("■ 이름 : %s", p->name);
+    GotoXY(4, 8);  printf("■ 신체 : %d cm / %d kg", p->height, p->weight);
+
+    GotoXY(4, 11); printf("[ 현재 능력치 ]");
+    GotoXY(4, 12); printf(" - 파워   (Power)   : %d", p->power);
+    GotoXY(4, 13); printf(" - 민첩   (Agility) : %d", p->agility);
+    GotoXY(4, 14); printf(" - 지구력 (Stamina) : %d", p->stamina);
+
+    GotoXY(4, 17); printf("[ 보유 자산 ]");
+    GotoXY(4, 18); printf(" - 훈련 포인트      : %d P", p->points);
+
+    // 2. 우측 캐릭터 모델링 렌더링 (X좌표 32, Y좌표 6)
+    DrawPlayerModel(p->height, p->weight, 32, 6);
+
+    GotoXY(2, 24); printf("==================================================");
+    GotoXY(2, 25); printf("아무 키나 누르면 클럽 하우스로 돌아갑니다...");
+
+    _getch(); // 키 입력 대기
+}
