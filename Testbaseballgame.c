@@ -27,11 +27,10 @@ int main() {
             ShowSchedule(&myPlayer, teams[selectedTeamIndex]);
             break;
         case 1:
-            // [새로 추가됨] 스테이터스 함수 호출!
             ShowStatus(&myPlayer, teams[selectedTeamIndex]);
             break;
         case 2:
-            GotoXY(5, 5); printf(">> [포인트 상점] 시스템은 준비 중입니다. <<");
+            PointShop(&myPlayer);
             break;
         case 3:
             GotoXY(5, 5); printf(">> 대망의 [다음 경기 시작] 로직으로 진입합니다! <<");
